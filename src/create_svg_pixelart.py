@@ -133,6 +133,9 @@ def main(args):
     print("Check ...", args)
     if len(args) != 2:
         print("Use: python3 create_svg_pixelart.py <image-filename>")
+        exit(0)
+
+    create(args[-1])
     
 
 if __name__ == '__main__':
@@ -140,7 +143,7 @@ if __name__ == '__main__':
     # Test
     # create("../images/image_test_1.png")
     # create("../images/image_test_2.jpg")
-    create("../images/bonsai.png")    
+    # create("../images/bonsai.png")    
 
     # Run 
-    # main(sys.argv)
+    main(sys.argv)
