@@ -1,3 +1,7 @@
 # SVG_PixelArt
 
-Convert imagem JPG/PNG em SVG em Pixel Art.
+Convert JPG/PNG image to SVG in Pixel Art.
+
+# Display
+
+![example](https://github.com/jpenrici/SVG_PixelArt/blob/main/display/display.png)
