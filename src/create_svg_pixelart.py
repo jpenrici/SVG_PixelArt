@@ -44,6 +44,9 @@ nparray = []     # image
 visited = []     # pixels
 connected = []   # region
 
+distance_x = 5   # distance between rectangles
+distance_y = 5
+
 
 def load(path):
     lines = []
@@ -103,7 +106,7 @@ def conect(x, y, fill, pixel_by_group):
         if channels == 3:
             r, g, b = nparray[y, x]
         # Hexadecimal color
-        if fill != "#" + dec2hex(r) + dec2hex(g) + dec2hex(b) :
+        if fill != dec2hex(r) + dec2hex(g) + dec2hex(b) :
             return
         # Store
         connected += [{'x': x, 'y': y, 'fill': fill}]
@@ -152,10 +155,13 @@ def create(image_path):
     file = os.path.basename(image_path)
     filename = os.path.splitext(file)[0]
 
+    # Pixel size with offset
+    size = (TARGETS["#PX#"] + distance_x) * PX
+
     # SVG base
     svg = text(load(TEMPLATE))
-    svg = svg.replace("#VBX#", str(width * TARGETS["#PX#"] * PX))
-    svg = svg.replace("#VBY#", str(height * TARGETS["#PX#"] * PX))
+    svg = svg.replace("#VBX#", str(width * size))
+    svg = svg.replace("#VBY#", str(height * size))
          
     base = RECTANGLE
     base = base.replace("#PX#", str(TARGETS["#PX#"] * PX))
@@ -180,19 +186,18 @@ def create(image_path):
             if channels == 3:
                 r, g, b = nparray[y, x]
             # Hexadecimal color
-            fill = "#" + dec2hex(r) + dec2hex(g) + dec2hex(b)
+            fill = dec2hex(r) + dec2hex(g) + dec2hex(b)
             # SVG
             connected = []
             conect(x, y, fill, 0)
             if len(connected) == 0:
                 continue
             temp = ""
-            for pixel in connected:
-                s = base
-                s = s.replace("#CF#", pixel['fill'])
-                s = s.replace("#ID#", TARGETS["#ID#"] + str(pixel['y'] * width + pixel['x']))
-                s = s.replace("#X0#", str(pixel['x'] * TARGETS["#PX#"] * PX))
-                s = s.replace("#Y0#", str(pixel['y'] * TARGETS["#PX#"] * PX))
+            for p in connected:
+                s = base.replace("#CF#", "#" + p['fill'])
+                s = s.replace("#ID#", "{0}x{1}y{2}".format(TARGETS["#ID#"], p['x'], p['y']))
+                s = s.replace("#X0#", str(p['x'] * size))
+                s = s.replace("#Y0#", str(p['y'] * size))
                 temp += s
             if len(connected) > 1:
                 g = GROUP.replace("#ID#", str(counter))
