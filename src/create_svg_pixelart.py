@@ -23,7 +23,7 @@ PATH, _ = os.path.split(os.path.realpath(__file__))
 TEMPLATE = "template.txt"
 SVG_PATH = "../output/"
 
-MARKCODE = "    <!-- ##PIXELART## -->"
+MARKCODE = "<!-- ##PIXELART## -->"
 RECTANGLE = """    <rect
        style="fill:#CF#;fill-opacity:1;stroke:#CS#;stroke-width:0.1;stroke-opacity:1"
        id="#ID#"
@@ -32,13 +32,11 @@ RECTANGLE = """    <rect
        x="#X0#"
        y="#Y0#" />
 """
-GROUP="""   <g
-     id="g_#ID#" >
-#SHAPE#
-   </g>
+GROUP="""   <g id="g_#ID#" >
+#SHAPE#   </g>
 """
 
-LIMIT = 500      # recursion
+LIMIT = 500      # recursive method
 
 nparray = []     # image
 visited = []     # pixels
@@ -86,6 +84,24 @@ def dec2hex(dec):
     return d[r] + d[n]
 
 
+def rgba(x, y):
+    global nparray
+    height, width, channels = nparray.shape
+
+    # Color Model
+    if channels == 4:
+        r, g, b, a = nparray[y, x]
+    if channels == 3:
+        r, g, b = nparray[y, x]
+        a = 255
+
+    return {'R': r, 'G': g, 'B': b, 'A': a}
+
+
+def rgb2hex(rgb):
+    return dec2hex(rgb['R']) + dec2hex(rgb['G']) + dec2hex(rgb['B'])
+
+
 def conect(x, y, fill, pixel_by_group):
     global nparray, visited, connected
     height, width, channels = nparray.shape
@@ -97,16 +113,11 @@ def conect(x, y, fill, pixel_by_group):
         return
 
     if not visited[y, x]:
-        # Color Models
-        if channels == 4:
-            r, g, b, a = nparray[y, x]
-            if a != 255:
-                visited[y, x] = True
-                return
-        if channels == 3:
-            r, g, b = nparray[y, x]
+        # Color
+        if rgba(x, y)['A'] != 255:
+            return
         # Hexadecimal color
-        if fill != dec2hex(r) + dec2hex(g) + dec2hex(b) :
+        if fill != rgb2hex(rgba(x, y)):
             return
         # Store
         connected += [{'x': x, 'y': y, 'fill': fill}]
@@ -175,21 +186,15 @@ def create(image_path):
     visited = np.zeros((height, width))
     for x in range(0, width):
         for y in range(0, height):
+            # Pixel
             if visited[y, x]:
                 continue
-            # Color Models
-            if channels == 4:
-                r, g, b, a = nparray[y, x]
-                if a != 255:
-                    visited[y, x] = True
-                    continue
-            if channels == 3:
-                r, g, b = nparray[y, x]
-            # Hexadecimal color
-            fill = dec2hex(r) + dec2hex(g) + dec2hex(b)
+            # Color
+            if rgba(x, y)['A'] != 255:
+                continue
             # SVG
             connected = []
-            conect(x, y, fill, 0)
+            conect(x, y, rgb2hex(rgba(x, y)), 0)     # Recursive method.
             if len(connected) == 0:
                 continue
             temp = ""
@@ -229,6 +234,7 @@ if __name__ == '__main__':
     # Test
     # create("../images/image_test_1.png")
     # create("../images/image_test_2.jpg")
+    # create("../images/image_test_3.png")
     # create("../images/bonsai.png")
 
     # Run 

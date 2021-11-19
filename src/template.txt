@@ -24,11 +24,10 @@
       </cc:Work>
     </rdf:RDF>
   </metadata>
-  <g
-     id="layer1">
-    <!--     Created in Python algorithm     -->
-    <!-- Attention: do not modify this code. -->
-    <!-- ##PIXELART## -->
-    <!-- Attention: do not modify this code. -->
+  <g id="layer1">
+<!--     Created in Python algorithm     -->
+<!-- Attention: do not modify this code. -->
+<!-- ##PIXELART## -->
+<!-- Attention: do not modify this code. -->
  </g>
 </svg>
